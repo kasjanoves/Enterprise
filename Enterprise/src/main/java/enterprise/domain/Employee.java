@@ -12,6 +12,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import enterprise.dto.EmployeeDTO;
+
 @Entity
 @Table
 public class Employee
@@ -29,7 +31,8 @@ public class Employee
     private String email;
     private LocalDateTime employmentDate;
     private LocalDateTime dismissalDate;
-    @OneToOne(mappedBy = "employee")
+    @OneToOne
+    @JoinColumn(name="position_id")
     private EmployeePosition position;
     private Double salary;
     private boolean isChief;
@@ -37,8 +40,13 @@ public class Employee
     @JoinColumn(name = "department_id")
     private Department department;
 
-    private Employee()
+    public Employee()
     {
+    }
+
+    public Long getId()
+    {
+        return id;
     }
 
     public String getLastName()
@@ -170,10 +178,61 @@ public class Employee
     {
         this.department = department;
     }
+    
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj instanceof Employee)
+            if (((Employee) obj).getId() != null && getId() != null)
+                return getId().equals(((Employee) obj).getId());
+        return false;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return getId() == null ? 0 : getId().intValue();
+    }
 
     public void removeFromDepartment()
     {
         setDepartment(null);
+    }
+
+    public EmployeeDTO toDTO()
+    {
+        EmployeeDTO dto = new EmployeeDTO();
+        dto.setId(getId());
+        dto.setName(getName());
+        dto.setLastName(getLastName());
+        dto.setPatronymic(getPatronymic());
+        dto.setBornDate(getBornDate());
+        dto.setGender(getGender());
+        dto.setEmail(getEmail());
+        dto.setPhone(getPhone());
+        dto.setPosition(getPosition());
+        dto.setChief(isChief());
+        dto.setEmploymentDate(getEmploymentDate());
+        dto.setDismissalDate(getDismissalDate());
+        dto.setSalary(getSalary());
+        return dto;
+    }
+
+    public void fill(EmployeeDTO dto)
+    {
+        setName(dto.getName());
+        setLastName(dto.getLastName());
+        setPatronymic(dto.getPatronymic());
+        setBornDate(dto.getBornDate());
+        setGender(dto.getGender());
+        setEmail(dto.getEmail());
+        setPhone(dto.getPhone());
+        setPosition(dto.getPosition());
+        setChief(dto.isChief());
+        setEmploymentDate(dto.getEmploymentDate());
+        setDismissalDate(dto.getDismissalDate());
+        setSalary(dto.getSalary());
+        
     }
 
 }

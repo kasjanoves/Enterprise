@@ -10,9 +10,21 @@ public class DepartmentDTO
     private EmployeeDTO chief;
     private Integer employeesCount;
     private DepartmentDTO parent;
+    private Double salaryTotal;
 
-    private DepartmentDTO()
+    public DepartmentDTO()
     {
+    }
+
+    public DepartmentDTO(String name)
+    {
+        this.name = name;
+    }
+
+    public DepartmentDTO(DepartmentDTO parent, String name)
+    {
+        this(name);
+        this.parent = parent;
     }
 
     public Long getId()
@@ -73,6 +85,16 @@ public class DepartmentDTO
     public void setParent(DepartmentDTO parent)
     {
         this.parent = parent;
+    }
+
+    public Double getSalaryTotal()
+    {
+        return salaryTotal;
+    }
+
+    public void setSalaryTotal(Double salaryTotal)
+    {
+        this.salaryTotal = salaryTotal;
     }
 
 }

@@ -12,6 +12,8 @@ public interface DepartmentsRepository
 
     Department get(DepartmentDTO qbe);
     
+    Department get(Department department);
+    
     void delete(Department department);
 
 }

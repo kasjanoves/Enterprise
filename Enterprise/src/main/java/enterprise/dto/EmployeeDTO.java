@@ -7,7 +7,7 @@ import enterprise.domain.Gender;
 
 public class EmployeeDTO
 {
-    private long id;
+    private Long id;
     private String lastName;
     private String name;
     private String patronymic;
@@ -21,16 +21,16 @@ public class EmployeeDTO
     private Double salary;
     private boolean isChief;
 
-    private EmployeeDTO()
+    public EmployeeDTO()
     {
     }
 
-    public long getId()
+    public Long getId()
     {
         return id;
     }
 
-    public void setId(long id)
+    public void setId(Long id)
     {
         this.id = id;
     }

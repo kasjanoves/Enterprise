@@ -5,6 +5,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 @Entity
 @Table
 public class EmployeePosition
@@ -14,13 +17,18 @@ public class EmployeePosition
     private Long id;
     private String name;
 
-    private EmployeePosition()
+    public EmployeePosition()
     {
     }
 
-    private EmployeePosition(String name)
+    public EmployeePosition(String name)
     {
         this.name = name;
+    }
+
+    public Long getId()
+    {
+        return id;
     }
 
     public String getName()
@@ -31,6 +39,18 @@ public class EmployeePosition
     public void setName(String name)
     {
         this.name = name;
+    }
+    
+    @Override
+    public boolean equals(Object obj)
+    {
+        return EqualsBuilder.reflectionEquals(this, obj, "name");
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return HashCodeBuilder.reflectionHashCode(this, "name");
     }
 
 }

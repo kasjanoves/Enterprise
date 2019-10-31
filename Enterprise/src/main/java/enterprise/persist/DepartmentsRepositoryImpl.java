@@ -12,11 +12,13 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import enterprise.domain.Department;
 import enterprise.dto.DepartmentDTO;
 
 @Repository
+@Transactional
 public class DepartmentsRepositoryImpl implements DepartmentsRepository
 {
 
@@ -30,7 +32,7 @@ public class DepartmentsRepositoryImpl implements DepartmentsRepository
         if (saved == null)
         {
             Department newOne = new Department();
-            //TODO ModelMapper
+            newOne.fill(dto);
             entityManager.persist(newOne);
             if (dto.getParent() != null)
             {
@@ -41,7 +43,24 @@ public class DepartmentsRepositoryImpl implements DepartmentsRepository
         }
         else
         {
-            //TODO ModelMapper
+            saved.fill(dto);
+            Department oldParent = saved.getParent();
+            if (dto.getParent() != null)
+            {
+                Department newParent = get(dto.getParent());
+                if (newParent != null)
+                {
+                    if (oldParent != null && !newParent.equals(oldParent))
+                        oldParent.removeSubDep(saved);
+                    newParent.addDep(saved);
+                }
+
+            }
+            else
+            {
+                if (oldParent != null)
+                    oldParent.removeSubDep(saved);
+            }
             entityManager.merge(saved);
         }
     }
@@ -73,7 +92,16 @@ public class DepartmentsRepositoryImpl implements DepartmentsRepository
                 CriteriaQuery<Department> query = builder.createQuery(Department.class);
                 Root<Department> root = query.from(Department.class);
                 query.select(root).where(builder.equal(root.get("name"), qbe.getName()));
-                return entityManager.createQuery(query).getSingleResult();
+                try
+                {
+                    return entityManager.createQuery(query).getSingleResult();
+                }
+                catch (Exception e)
+                {
+                    System.out.println(e.getStackTrace());
+                    return null;
+                }
+
             }
 
         }
@@ -92,9 +120,15 @@ public class DepartmentsRepositoryImpl implements DepartmentsRepository
                     saved.getParent().removeSubDep(saved);
                 saved.detachSubDeps();
                 saved.releaseEmployees();
-                entityManager.remove(department);
+                entityManager.remove(saved);
             }
         }
+    }
+
+    @Override
+    public Department get(Department department)
+    {
+        return entityManager.find(Department.class, department.getId());
     }
 
 }

@@ -1,8 +1,3 @@
-/*
-* (c) LOIS, Ltd., 2019
-* 
-* $Id: LogEntry.java,v 1.1 28 окт. 2019 г. 14:40:41 User Exp $
-*/
 package enterprise.domain;
 
 import java.time.LocalDateTime;
@@ -13,6 +8,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 @Entity
 @Table
@@ -27,16 +25,26 @@ public class DepartmentLogEntry
     @JoinColumn(name = "object_id")
     private Department object;
 
-    private DepartmentLogEntry()
+    public DepartmentLogEntry()
     {
         timeStamp = LocalDateTime.now();
     }
 
-    private DepartmentLogEntry(String message, Department object)
+    public DepartmentLogEntry(Department object, String message)
     {
         this();
         this.message = message;
         this.object = object;
+    }
+    
+    public Department getObject()
+    {
+        return object;
+    }
+
+    public Long getId()
+    {
+        return id;
     }
 
     public String getMessage()
@@ -44,29 +52,21 @@ public class DepartmentLogEntry
         return message;
     }
 
-    public LocalDateTime getTimestamp()
+    public LocalDateTime getTimeStamp()
     {
         return timeStamp;
     }
-
-    public Department getObject()
+    
+    @Override
+    public boolean equals(Object obj)
     {
-        return object;
+        return EqualsBuilder.reflectionEquals(this, obj, "id");
     }
 
-    public void setMessage(String message)
+    @Override
+    public int hashCode()
     {
-        this.message = message;
-    }
-
-    public void setTimestamp(LocalDateTime timestamp)
-    {
-        this.timeStamp = timestamp;
-    }
-
-    public void setObject(Department object)
-    {
-        this.object = object;
+        return HashCodeBuilder.reflectionHashCode(this, "id");
     }
 
 }
