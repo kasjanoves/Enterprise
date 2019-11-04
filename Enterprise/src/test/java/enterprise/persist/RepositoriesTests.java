@@ -32,7 +32,7 @@ public class RepositoriesTests
 
     @Autowired
     EmployeesRepository employeesRepository;
-    
+
     @Autowired
     EmployeePositionsRepository emplPositionsRepository;
 
@@ -70,21 +70,20 @@ public class RepositoriesTests
         assertEquals(saved.getCreationDate(), createDate);
 
         //change name
-        head.setName("Главная дирекция");
-        departmentsRepository.save(head);
+        saved.setName("Главная дирекция");
+        departmentsRepository.save(saved);
 
-        DepartmentDTO qbe = new DepartmentDTO();
-        qbe.setId(1L);
-        saved = departmentsRepository.get(qbe);
-        assertNotNull(saved);
-        assertEquals(saved, head);
-        assertEquals(saved.getName(), "Главная дирекция");
+        List<Department> all = departmentsRepository.getAll();
+        assertNotNull(all);
+        assertTrue(all.size() == 1);
+        assertEquals(head, all.get(0));
+        assertEquals("Главная дирекция", all.get(0).getName());
 
         //add sub departments
         Department sub1 = new Department("Дирекция");
         sub1.setCreationDate(createDate.plusDays(1));
         departmentsRepository.save(sub1);
-        
+
         Department sub2 = new Department("Бухгалтерия");
         sub1.setCreationDate(createDate.plusDays(1));
         departmentsRepository.save(sub2);
@@ -92,18 +91,18 @@ public class RepositoriesTests
         saved = departmentsRepository.get(sub1);
         assertNotNull(saved);
         assertEquals(saved, sub1);
-        
+
         //attach to parent
-        qbe = new DepartmentDTO();
+        DepartmentDTO qbe = new DepartmentDTO();
         qbe.setName("Дирекция");
         qbe.setParent(head.toDTO());
         departmentsRepository.save(qbe);
-        
+
         qbe = new DepartmentDTO();
         qbe.setName("Бухгалтерия");
         qbe.setParent(head.toDTO());
         departmentsRepository.save(qbe);
-        
+
         head = departmentsRepository.get(head);
         assertTrue(head.getSubDepartments().size() == 2);
         assertNotNull(head.getSubDepartments().get(0));
@@ -112,35 +111,35 @@ public class RepositoriesTests
         assertNotNull(head.getSubDepartments().get(1));
         assertEquals(head.getSubDepartments().get(1), sub2);
         assertEquals(head.getSubDepartments().get(1).getParent(), head);
-        
+
         //move department
         qbe = new DepartmentDTO();
         qbe.setName("Бухгалтерия");
         qbe.setParent(sub1.toDTO());
         departmentsRepository.save(qbe);
-        
+
         head = departmentsRepository.get(head);
         assertTrue(head.getSubDepartments().size() == 1);
-        Department sub1read = head.getSubDepartments().get(0); 
+        Department sub1read = head.getSubDepartments().get(0);
         assertEquals(sub1read, sub1);
         assertTrue(sub1read.getSubDepartments().size() == 1);
         assertNotNull(sub1read.getSubDepartments().get(0));
         assertEquals(sub1read.getSubDepartments().get(0), sub2);
         assertEquals(sub1read.getSubDepartments().get(0).getParent(), sub1read);
-        
+
         //get all sub deps
         List<Department> allSubs = head.getSubDepsRecursively();
         assertTrue(allSubs.size() == 2);
         assertTrue(allSubs.contains(sub1));
         assertTrue(allSubs.contains(sub2));
-        
+
         //get all parents
         sub2 = departmentsRepository.get(sub2);
         List<Department> allParents = sub2.getParentsRecursively();
         assertTrue(allParents.size() == 2);
         assertTrue(allParents.contains(head));
         assertTrue(allParents.contains(sub1));
-        
+
         //delete
         sub1 = departmentsRepository.get(sub1);
         departmentsRepository.delete(sub1);
@@ -149,7 +148,7 @@ public class RepositoriesTests
         assertTrue(head.getSubDepartments().isEmpty());
         sub2 = departmentsRepository.get(sub2);
         assertNull(sub2.getParent());
-        
+
         //get by name & dto
         Department headByName = departmentsRepository.get(new DepartmentDTO("Главная дирекция"));
         assertNotNull(headByName);
@@ -159,10 +158,6 @@ public class RepositoriesTests
     @Test
     public void EmployeesRepositoryTest()
     {
-        emplPositionsRepository.save("Директор");
-        emplPositionsRepository.save("Инженер");
-        emplPositionsRepository.save("Старшый товаровед");
-        
         //create
         Employee emp1 = new Employee();
         emp1.setName("Тест");
@@ -176,10 +171,10 @@ public class RepositoriesTests
         emp1.setEmploymentDate(LocalDateTime.of(2010, 1, 1, 0, 0));
         emp1.setPosition(emplPositionsRepository.get("Директор"));
         emp1.setSalary(100500.0);
-        
+
         employeesRepository.save(emp1);
         assertNotNull(emp1.getId());
-        
+
         Employee savedEmp1 = employeesRepository.get(emp1);
         assertNotNull(savedEmp1);
         assertEquals(emp1, savedEmp1);
@@ -194,7 +189,7 @@ public class RepositoriesTests
         assertEquals(LocalDateTime.of(2010, 1, 1, 0, 0), savedEmp1.getEmploymentDate());
         assertEquals(emplPositionsRepository.get("Директор"), savedEmp1.getPosition());
         assertEquals(new Double(100500.0), savedEmp1.getSalary());
-        
+
         Employee emp2 = new Employee();
         emp2.setName("Еквалс");
         emp2.setLastName("Тестов");
@@ -207,10 +202,10 @@ public class RepositoriesTests
         emp2.setEmploymentDate(LocalDateTime.of(2011, 1, 1, 0, 0));
         emp2.setPosition(emplPositionsRepository.get("Инженер"));
         emp2.setSalary(50000.0);
-        
+
         employeesRepository.save(emp2);
         assertNotNull(emp2.getId());
-        
+
         Employee emp3 = new Employee();
         emp3.setName("Елизвета");
         emp3.setLastName("Нуллова");
@@ -223,10 +218,10 @@ public class RepositoriesTests
         emp3.setEmploymentDate(LocalDateTime.of(2013, 1, 1, 0, 0));
         emp3.setPosition(emplPositionsRepository.get("Старшый товаровед"));
         emp3.setSalary(30000.0);
-        
+
         employeesRepository.save(emp3);
         assertNotNull(emp3.getId());
-        
+
         //get by criteria & edit
         EmployeeDTO qbe = new EmployeeDTO();
         qbe.setName("Еквалс");
@@ -243,14 +238,14 @@ public class RepositoriesTests
         assertEquals("testovequals2@mail.ru", emp2fetched.getEmail());
         assertEquals("79382221111", emp2fetched.getPhone());
         assertEquals(new Double(80000.0), emp2fetched.getSalary());
-        
+
         //attach to departments
         DepartmentDTO headDTO = new DepartmentDTO("Дирекция");
         departmentsRepository.save(headDTO);
         departmentsRepository.save(new DepartmentDTO(headDTO, "Техотдел"));
         departmentsRepository.save(new DepartmentDTO(headDTO, "Склад"));
         departmentsRepository.save(new DepartmentDTO(new DepartmentDTO("Техотдел"), "Гараж"));
-        
+
         Department head = departmentsRepository.get(headDTO);
         assertNotNull(head);
         head.addEmployee(emp1);
@@ -259,7 +254,7 @@ public class RepositoriesTests
         assertTrue(head.getEmployees().size() == 1);
         assertEquals(emp1, head.getEmployees().get(0));
         assertEquals(head, head.getEmployees().get(0).getDepartment());
-        
+
         Department sub1 = departmentsRepository.get(new DepartmentDTO("Техотдел"));
         sub1.addEmployee(emp2);
         departmentsRepository.save(sub1);
@@ -267,7 +262,7 @@ public class RepositoriesTests
         assertTrue(sub1.getEmployees().size() == 1);
         assertEquals(emp2, sub1.getEmployees().get(0));
         assertEquals(sub1, sub1.getEmployees().get(0).getDepartment());
-        
+
         Department sub2 = departmentsRepository.get(new DepartmentDTO("Склад"));
         sub2.addEmployee(emp3);
         departmentsRepository.save(sub2);
@@ -275,7 +270,7 @@ public class RepositoriesTests
         assertTrue(sub2.getEmployees().size() == 1);
         assertEquals(emp3, sub2.getEmployees().get(0));
         assertEquals(sub2, sub2.getEmployees().get(0).getDepartment());
-        
+
         //move employee
         Department sub3 = departmentsRepository.get(new DepartmentDTO("Гараж"));
         sub3.addEmployee(emp3);
@@ -286,7 +281,7 @@ public class RepositoriesTests
         assertTrue(sub3.getEmployees().size() == 1);
         assertEquals(emp3, sub3.getEmployees().get(0));
         assertEquals(sub3, sub3.getEmployees().get(0).getDepartment());
-        
+
         //get boss
         Employee emp4 = new Employee();
         emp4.setName("Иван");
@@ -294,6 +289,7 @@ public class RepositoriesTests
         emp4.setPatronymic("Тестович");
         emp4.setBornDate(LocalDateTime.of(1985, 1, 1, 0, 0));
         emp4.setGender(Gender.MALE);
+        emp4.setSalary(100000.0);
         employeesRepository.save(emp4);
         head = departmentsRepository.get(head);
         head.addEmployee(emp4);
@@ -304,7 +300,13 @@ public class RepositoriesTests
         emp4 = employeesRepository.get(emp4);
         assertEquals(head, emp4.getDepartment());
         assertEquals(emp1, emp4.getDepartment().getChief());
-        
+
+        //get salary fund
+        head.updateSalaryTotal();
+        departmentsRepository.save(head);
+        head = departmentsRepository.get(head);
+        assertEquals(new Double(emp1.getSalary() + emp4.getSalary()), head.getSalaryFundTotal());
+
         //dismissal 
         emp3 = employeesRepository.get(emp3);
         Department dep = departmentsRepository.get(emp3.getDepartment());
@@ -317,7 +319,7 @@ public class RepositoriesTests
         emp3 = employeesRepository.get(emp3);
         assertNull(emp3.getDepartment());
         assertEquals(LocalDateTime.of(2019, 10, 31, 0, 0), emp3.getDismissalDate());
-        
+
         //delete
         Employee delEmpl = employeesRepository.get(emp4);
         employeesRepository.delete(delEmpl);

@@ -38,10 +38,7 @@ public class Department
             CascadeType.REFRESH
     })
     private List<Employee> employees = new ArrayList<Employee>(0);
-    @OneToOne(cascade = {
-            CascadeType.PERSIST,
-            CascadeType.REMOVE
-    })
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "fund_id")
     private DepartmentSalaryFund salaryFund;
 
@@ -85,6 +82,13 @@ public class Department
     {
         return employees.size();
 
+    }
+
+    public Double getSalaryFundTotal()
+    {
+        if (salaryFund != null)
+            return salaryFund.getTotal();
+        return null;
     }
 
     public Employee getChief()
@@ -207,11 +211,6 @@ public class Department
         return getId() == null ? 0 : getId().intValue();
     }
 
-    public Department getParentDep()
-    {
-        return parentDep;
-    }
-
     public List<Employee> getEmployees()
     {
         return Collections.unmodifiableList(employees);
@@ -232,6 +231,20 @@ public class Department
             employees.remove(employee);
             employee.setDepartment(null);
         }
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Department[" + id + "," + name + "]";
+    }
+
+    public void updateSalaryTotal()
+    {
+        salaryFund.setTotal(employees.stream()
+                .mapToDouble(Employee::getSalary)
+                .sum());
+
     }
 
 }

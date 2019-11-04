@@ -1,28 +1,30 @@
 package enterprise.service;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 
 import enterprise.dto.DepartmentDTO;
 
 public interface DepartmentsService
 {
-    ResponseEntity<?> create(DepartmentDTO department);
+    ResponseEntity<?> create(DepartmentDTO department, Errors errors);
 
-    ResponseEntity<?> changeName(DepartmentDTO department, String name);
+    ResponseEntity<?> rename(DepartmentDTO department, String name);
 
     ResponseEntity<?> delete(DepartmentDTO department);
 
-    ResponseEntity<?> getInfo(DepartmentDTO department);
+    ResponseEntity<?> get(DepartmentDTO department);
 
-    ResponseEntity<?> getSubDepartmentsInfo(DepartmentDTO department);
+    ResponseEntity<?> getSubDepartments(DepartmentDTO department);
 
-    ResponseEntity<?> getSubDepartmentsInfoRecursively(DepartmentDTO department);
+    ResponseEntity<?> getSubDepartmentsRecursively(DepartmentDTO department);
 
     ResponseEntity<?> move(DepartmentDTO what, DepartmentDTO were);
 
-    ResponseEntity<?> getParentsInfo(DepartmentDTO department);
+    ResponseEntity<?> getParents(DepartmentDTO department);
 
     ResponseEntity<?> findByName(String name);
 
     ResponseEntity<?> getSalaryTotal(DepartmentDTO department);
+
 }

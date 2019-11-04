@@ -8,9 +8,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 @Entity
 @Table
 public class DepartmentSalaryFund
@@ -30,6 +27,16 @@ public class DepartmentSalaryFund
     public DepartmentSalaryFund(Department department)
     {
         this.department = department;
+    }
+
+    public Long getId()
+    {
+        return id;
+    }
+
+    public LocalDateTime getUpdateDate()
+    {
+        return updateDate;
     }
 
     public Double getTotal()
@@ -52,17 +59,20 @@ public class DepartmentSalaryFund
     {
         return department;
     }
-    
+
     @Override
     public boolean equals(Object obj)
     {
-        return EqualsBuilder.reflectionEquals(this, obj, "id");
+        if (obj instanceof DepartmentSalaryFund)
+            if (((DepartmentSalaryFund) obj).getId() != null && getId() != null)
+                return getId().equals(((DepartmentSalaryFund) obj).getId());
+        return false;
     }
 
     @Override
     public int hashCode()
     {
-        return HashCodeBuilder.reflectionHashCode(this, "id");
+        return getId() == null ? 0 : getId().intValue();
     }
 
 }

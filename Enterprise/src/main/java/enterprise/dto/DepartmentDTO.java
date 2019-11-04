@@ -2,13 +2,16 @@ package enterprise.dto;
 
 import java.time.LocalDateTime;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 public class DepartmentDTO
 {
     private Long id;
     private String name;
+    @DateTimeFormat
     private LocalDateTime creationDate;
     private EmployeeDTO chief;
-    private Integer employeesCount;
+    private Integer employeesCount = 0;
     private DepartmentDTO parent;
     private Double salaryTotal;
 

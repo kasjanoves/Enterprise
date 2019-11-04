@@ -30,7 +30,7 @@ public class EmployeesRepositoryImpl implements EmployeesRepository
     private EntityManager entityManager;
 
     @Override
-    public void save(EmployeeDTO dto)
+    public Employee save(EmployeeDTO dto)
     {
         Employee saved = get(dto);
         if (saved == null)
@@ -38,11 +38,12 @@ public class EmployeesRepositoryImpl implements EmployeesRepository
             Employee newOne = new Employee();
             newOne.fill(dto);
             entityManager.persist(newOne);
+            return newOne;
         }
         else
         {
             saved.fill(dto);
-            entityManager.merge(saved);
+            return entityManager.merge(saved);
         }
     }
 

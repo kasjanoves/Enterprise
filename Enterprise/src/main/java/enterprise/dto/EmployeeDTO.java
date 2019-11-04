@@ -2,22 +2,39 @@ package enterprise.dto;
 
 import java.time.LocalDateTime;
 
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Pattern;
+
+import org.hibernate.validator.constraints.Email;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import enterprise.domain.EmployeePosition;
 import enterprise.domain.Gender;
 
 public class EmployeeDTO
 {
     private Long id;
+
+    @Pattern(regexp = RUS_FIO_PATTERN)
     private String lastName;
+    @Pattern(regexp = RUS_FIO_PATTERN)
     private String name;
+    @Pattern(regexp = RUS_FIO_PATTERN)
     private String patronymic;
+    @ValueOfEnum(enumClass = Gender.class)
     private Gender gender;
+    @DateTimeFormat
     private LocalDateTime bornDate;
+    @Pattern(regexp = PHONE_PATTERN)
     private String phone;
+    @Email
     private String email;
+    @DateTimeFormat
     private LocalDateTime employmentDate;
+    @DateTimeFormat
     private LocalDateTime dismissalDate;
     private EmployeePosition position;
+    @Digits(fraction = 2, integer = 6)
     private Double salary;
     private boolean isChief;
 
@@ -155,4 +172,6 @@ public class EmployeeDTO
         this.isChief = isChief;
     }
 
+    private static final String RUS_FIO_PATTERN = "[а-яА-Я-]";
+    private static final String PHONE_PATTERN = "[0-9+-() ]";
 }

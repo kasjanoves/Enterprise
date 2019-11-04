@@ -5,6 +5,8 @@
 */
 package enterprise.persist;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -26,7 +28,7 @@ public class DepartmentsRepositoryImpl implements DepartmentsRepository
     private EntityManager entityManager;
 
     @Override
-    public void save(DepartmentDTO dto)
+    public Department save(DepartmentDTO dto)
     {
         Department saved = get(dto);
         if (saved == null)
@@ -40,6 +42,7 @@ public class DepartmentsRepositoryImpl implements DepartmentsRepository
                 if (parent != null)
                     parent.addDep(newOne);
             }
+            return newOne;
         }
         else
         {
@@ -61,7 +64,7 @@ public class DepartmentsRepositoryImpl implements DepartmentsRepository
                 if (oldParent != null)
                     oldParent.removeSubDep(saved);
             }
-            entityManager.merge(saved);
+            return entityManager.merge(saved);
         }
     }
 
@@ -129,6 +132,15 @@ public class DepartmentsRepositoryImpl implements DepartmentsRepository
     public Department get(Department department)
     {
         return entityManager.find(Department.class, department.getId());
+    }
+
+    @Override
+    public List<Department> getAll()
+    {
+        CriteriaQuery<Department> criteria = entityManager.getCriteriaBuilder()
+                .createQuery(Department.class);
+        criteria.from(Department.class);
+        return entityManager.createQuery(criteria).getResultList();
     }
 
 }

@@ -8,7 +8,7 @@ import enterprise.dto.EmployeeDTO;
 public interface EmployeesRepository
 {
 
-    void save(EmployeeDTO employee);
+    Employee save(EmployeeDTO employee);
     
     void save(Employee employee);
     
