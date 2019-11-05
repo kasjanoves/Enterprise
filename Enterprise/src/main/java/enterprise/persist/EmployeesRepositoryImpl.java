@@ -1,8 +1,3 @@
-/*
-* (c) LOIS, Ltd., 2019
-* 
-* $Id: EmployeesRepositoryImpl.java,v 1.1 29 окт. 2019 г. 22:56:58 User Exp $
-*/
 package enterprise.persist;
 
 import java.util.ArrayList;

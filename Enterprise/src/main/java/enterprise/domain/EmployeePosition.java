@@ -2,6 +2,7 @@ package enterprise.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -14,7 +15,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 public class EmployeePosition
 {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotNull
     private String name;
@@ -42,7 +43,7 @@ public class EmployeePosition
     {
         this.name = name;
     }
-    
+
     @Override
     public boolean equals(Object obj)
     {

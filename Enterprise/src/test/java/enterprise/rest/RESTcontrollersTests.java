@@ -5,6 +5,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.runner.RunWith;
 import org.skyscreamer.jsonassert.Customization;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -30,12 +33,14 @@ import enterprise.dto.DepartmentDTO;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SpringBootWebApplication.class)
 @AutoConfigureMockMvc
+@TestMethodOrder(value = OrderAnnotation.class)
 public class RESTcontrollersTests
 {
     @Autowired
     private MockMvc mockMvc;
 
     @Test
+    @Order(1)
     public void create() throws Exception
     {
         DepartmentDTO headDep = new DepartmentDTO("Дирекция");
@@ -69,9 +74,9 @@ public class RESTcontrollersTests
                         .getContentAsString(),
                 new CustomComparator(JSONCompareMode.LENIENT,
                         new Customization("id", (o1, o2) -> true)));
-        
+
         DepartmentDTO headDepFetched = mapper.readValue(result.getResponse()
-                        .getContentAsString(), DepartmentDTO.class);
+                .getContentAsString(), DepartmentDTO.class);
         assertNotNull(headDepFetched.getId());
 
         //create with parent
@@ -111,6 +116,45 @@ public class RESTcontrollersTests
                 .getContentAsString(), DepartmentDTO.class);
         assertNotNull(subDep1Fetched.getId());
         assertEquals(headDepFetched, subDep1Fetched.getParent());
+
+    }
+
+    @Test
+    @Order(2)
+    public void create_Restrictions() throws Exception
+    {
+        //dublicate name
+        DepartmentDTO headDep = new DepartmentDTO("Дирекция");
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        String json = mapper.writeValueAsString(headDep);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/departments/create")
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
+        assertEquals("Department with same name already exists", result.getResponse().getContentAsString());
+        
+        //wrong parent
+        DepartmentDTO newDep = new DepartmentDTO(new DepartmentDTO("Цех №5"), "Гараж");
+        
+        json = mapper.writeValueAsString(newDep);
+        
+        requestBuilder = MockMvcRequestBuilders
+                .post("/departments/create")
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON);
+        
+        result = mockMvc.perform(requestBuilder).andReturn();
+        assertEquals(HttpStatus.NOT_FOUND.value(), result.getResponse().getStatus());
+        assertEquals("Parent department not found", result.getResponse().getContentAsString());
+        
+        //validate fields
+        
     }
 
 }

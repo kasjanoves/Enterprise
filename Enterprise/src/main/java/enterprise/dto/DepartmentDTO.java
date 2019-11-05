@@ -2,11 +2,14 @@ package enterprise.dto;
 
 import java.time.LocalDateTime;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
 public class DepartmentDTO
 {
     private Long id;
+    @NotNull
     private String name;
     @DateTimeFormat
     private LocalDateTime creationDate;
@@ -98,6 +101,21 @@ public class DepartmentDTO
     public void setSalaryTotal(Double salaryTotal)
     {
         this.salaryTotal = salaryTotal;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj instanceof DepartmentDTO)
+            if (((DepartmentDTO) obj).getId() != null && getId() != null)
+                return getId().equals(((DepartmentDTO) obj).getId());
+        return false;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return getId() == null ? 0 : getId().intValue();
     }
 
 }

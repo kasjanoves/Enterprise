@@ -1,8 +1,3 @@
-/*
-* (c) LOIS, Ltd., 2019
-* 
-* $Id: DepartmentsRepositoryImpl.java,v 1.1 28 окт. 2019 г. 22:31:59 User Exp $
-*/
 package enterprise.persist;
 
 import java.util.List;

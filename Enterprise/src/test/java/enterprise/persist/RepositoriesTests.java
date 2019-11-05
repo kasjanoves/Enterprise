@@ -66,18 +66,17 @@ public class RepositoriesTests
         Department saved = departmentsRepository.get(head);
         assertNotNull(saved);
         assertEquals(saved, head);
-        assertEquals(saved.getName(), "Дирекция");
-        assertEquals(saved.getCreationDate(), createDate);
+        assertEquals("Дирекция", saved.getName());
+        assertEquals(createDate, saved.getCreationDate());
 
         //change name
         saved.setName("Главная дирекция");
         departmentsRepository.save(saved);
 
-        List<Department> all = departmentsRepository.getAll();
-        assertNotNull(all);
-        assertTrue(all.size() == 1);
-        assertEquals(head, all.get(0));
-        assertEquals("Главная дирекция", all.get(0).getName());
+        //get by name & dto
+        Department headByName = departmentsRepository.get(new DepartmentDTO("Главная дирекция"));
+        assertNotNull(headByName);
+        assertEquals(head, headByName);
 
         //add sub departments
         Department sub1 = new Department("Дирекция");
@@ -106,11 +105,11 @@ public class RepositoriesTests
         head = departmentsRepository.get(head);
         assertTrue(head.getSubDepartments().size() == 2);
         assertNotNull(head.getSubDepartments().get(0));
-        assertEquals(head.getSubDepartments().get(0), sub1);
-        assertEquals(head.getSubDepartments().get(0).getParent(), head);
+        assertEquals(sub1, head.getSubDepartments().get(0));
+        assertEquals(head, head.getSubDepartments().get(0).getParent());
         assertNotNull(head.getSubDepartments().get(1));
         assertEquals(head.getSubDepartments().get(1), sub2);
-        assertEquals(head.getSubDepartments().get(1).getParent(), head);
+        assertEquals(head, head.getSubDepartments().get(1).getParent());
 
         //move department
         qbe = new DepartmentDTO();
@@ -149,10 +148,6 @@ public class RepositoriesTests
         sub2 = departmentsRepository.get(sub2);
         assertNull(sub2.getParent());
 
-        //get by name & dto
-        Department headByName = departmentsRepository.get(new DepartmentDTO("Главная дирекция"));
-        assertNotNull(headByName);
-        assertEquals(head, headByName);
     }
 
     @Test
@@ -326,5 +321,9 @@ public class RepositoriesTests
         head = departmentsRepository.get(head);
         assertTrue(head.getEmployees().size() == 1);
         assertNull(employeesRepository.get(delEmpl));
+        
+        DepartmentDTO t = new DepartmentDTO("Fuck");
+        t.setCreationDate(LocalDateTime.now());
+        departmentsRepository.save(t);
     }
 }

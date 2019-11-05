@@ -172,6 +172,22 @@ public class EmployeeDTO
         this.isChief = isChief;
     }
 
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj instanceof EmployeeDTO)
+            if (((EmployeeDTO) obj).getId() != null && getId() != null)
+                return getId().equals(((EmployeeDTO) obj).getId());
+        return false;
+
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return getId() == null ? 0 : getId().intValue();
+    }
+
     private static final String RUS_FIO_PATTERN = "[а-яА-Я-]";
     private static final String PHONE_PATTERN = "[0-9+-() ]";
 }
